@@ -69,6 +69,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
 		List<SysUserEntity> sysUserEntities = sysUserDao.queryByUserNameAndCreateId(paramsMap);
         PageInfo<SysUserEntity> pageInfoData = new PageInfo<>(sysUserEntities);
         PageUtils pageUtils = new PageUtils(pageInfoData);
+		System.out.println();
         return pageUtils;
 	}
 
