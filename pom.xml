@@ -5,7 +5,12 @@
 	<groupId>com.secs.framework</groupId>
 	<artifactId>secs-framework</artifactId>
 	<version>1.0</version>
-	<packaging>jar</packaging>
+	<modules>
+		<module>secs-system</module>
+		<module>secs-common</module>
+		<module>secs-web</module>
+	</modules>
+	<packaging>pom</packaging>
 	<description>htsys</description>
 
 	<parent>
@@ -287,17 +292,12 @@
     	<artifactId>jsch</artifactId>
     	<version>0.1.55</version>
 		</dependency>
-
-		<dependency>
-			<groupId>com.github.pagehelper</groupId>
-			<artifactId>pagehelper</artifactId>
-			<version>5.1.8</version>
-		</dependency>
+		
 
 	</dependencies>
 
 	<build>
-		<finalName>yawei</finalName>
+		<!--<finalName>yawei</finalName>-->
 		<extensions>
 			<extension>
 				<groupId>org.apache.maven.wagon</groupId>
@@ -306,13 +306,13 @@
 			</extension>
 		</extensions>
 		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-					<fork>true</fork>
-				</configuration>
-			</plugin>
+			<!--<plugin>-->
+				<!--<groupId>org.springframework.boot</groupId>-->
+				<!--<artifactId>spring-boot-maven-plugin</artifactId>-->
+				<!--<configuration>-->
+					<!--<fork>true</fork>-->
+				<!--</configuration>-->
+			<!--</plugin>-->
 			<!-- 跳过单元测试 -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

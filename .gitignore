@@ -2,11 +2,4 @@
 *.temp
 /vendor
 *.iml
-.idea
-.classpath
-.project
-*.eml
-/target/
-*.log.*
-generatorConfig.xml
-*.lock
+*.idea
