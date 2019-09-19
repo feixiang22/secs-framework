@@ -1,8 +1,10 @@
 package com.secs.framework.modules.sys.oauth2;
 
+import com.secs.framework.common.utils.JwtUtil;
 import com.secs.framework.modules.sys.entity.SysUserEntity;
 import com.secs.framework.modules.sys.entity.SysUserTokenEntity;
 import com.secs.framework.modules.sys.service.ShiroService;
+import io.jsonwebtoken.Claims;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
@@ -11,6 +13,7 @@ import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.Set;
 
 /**
@@ -24,6 +27,8 @@ import java.util.Set;
 public class OAuth2Realm extends AuthorizingRealm {
     @Autowired
     private ShiroService shiroService;
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @Override
     public boolean supports(AuthenticationToken token) {
@@ -51,20 +56,48 @@ public class OAuth2Realm extends AuthorizingRealm {
      */
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
-        String accessToken = (String) token.getPrincipal();
+//        String accessToken = (String) token.getPrincipal();
+//
+//        //根据accessToken，查询用户信息
+//        SysUserTokenEntity tokenEntity = shiroService.queryByToken(accessToken);
+//        //token失效
+//        if(tokenEntity == null || tokenEntity.getExpireTime().getTime() < System.currentTimeMillis()){
+//            throw new IncorrectCredentialsException("token失效，请重新登录");
+//        }
+//
+//        //查询用户信息
+//        SysUserEntity user = shiroService.queryUser(tokenEntity.getUserId());
+//        //账号锁定
+//        if(user.getStatus() == 0){
+//            throw new LockedAccountException("账号已被锁定,请联系管理员");
+//        }
+//
+//        SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(user, accessToken, getName());
+//        return info;
 
-        //根据accessToken，查询用户信息
-        SysUserTokenEntity tokenEntity = shiroService.queryByToken(accessToken);
+
+        String accessToken = (String) token.getPrincipal();
+        //解析token
+        Claims claims = jwtUtil.parseToken(accessToken);
+        if(claims == null){
+            throw new IncorrectCredentialsException("token失效，请重新登录");
+        }
+        //获取userId
+        Long userId = Long.valueOf(claims.getSubject());
+        //获取过期时间
+        Date expiration = claims.getExpiration();
+        //校验是否过期，true过期，false不过期
+        boolean tokenExpired = jwtUtil.isTokenExpired(expiration);
         //token失效
-        if(tokenEntity == null || tokenEntity.getExpireTime().getTime() < System.currentTimeMillis()){
+        if(userId == null || tokenExpired){
             throw new IncorrectCredentialsException("token失效，请重新登录");
         }
 
         //查询用户信息
-        SysUserEntity user = shiroService.queryUser(tokenEntity.getUserId());
+        SysUserEntity user = shiroService.queryUser(userId);
         //账号锁定
-        if(user.getStatus() == 0){
-            throw new LockedAccountException("账号已被锁定,请联系管理员");
+        if(user == null){
+            throw new LockedAccountException("账户不存在");
         }
 
         SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(user, accessToken, getName());

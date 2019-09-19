@@ -3,6 +3,7 @@ package com.secs.framework.common.utils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -17,8 +18,11 @@ import java.util.Date;
 @ConfigurationProperties(prefix = "renren.jwt")
 @Component
 public class JwtUtil {
+//    @Value("${renren.jwt.secret}")
     private String secret;
+//    @Value("${renren.jwt.expire}")
     private Long expire;
+//    @Value("${renren.jwt.header}")
     private String header;
  
  

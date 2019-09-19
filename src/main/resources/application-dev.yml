@@ -4,7 +4,7 @@ spring:
         driverClassName: com.mysql.jdbc.Driver
         druid:
             first:  #数据源1
-                url: jdbc:mysql://localhost:3306/mysql-shiro?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8
+                url: jdbc:mysql://localhost:3306/mysql_shiro?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8
                 username: root
                 password: root
 #            second:  #数据源2
