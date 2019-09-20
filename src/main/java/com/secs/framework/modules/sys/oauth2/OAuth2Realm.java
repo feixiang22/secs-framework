@@ -1,10 +1,12 @@
 package com.secs.framework.modules.sys.oauth2;
 
+import com.secs.framework.common.exception.RRException;
 import com.secs.framework.common.utils.JwtUtil;
 import com.secs.framework.modules.sys.entity.SysUserEntity;
 import com.secs.framework.modules.sys.entity.SysUserTokenEntity;
 import com.secs.framework.modules.sys.service.ShiroService;
 import io.jsonwebtoken.Claims;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
@@ -77,25 +79,23 @@ public class OAuth2Realm extends AuthorizingRealm {
 
 
         String accessToken = (String) token.getPrincipal();
+        if(StringUtils.isBlank(accessToken)){
+            throw new IncorrectCredentialsException("token不能为空");
+        }
         //解析token
         Claims claims = jwtUtil.parseToken(accessToken);
-        if(claims == null){
+        //token失效
+        if(claims == null || jwtUtil.isTokenExpired(claims.getExpiration())){
             throw new IncorrectCredentialsException("token失效，请重新登录");
         }
         //获取userId
         Long userId = Long.valueOf(claims.getSubject());
         //获取过期时间
         Date expiration = claims.getExpiration();
-        //校验是否过期，true过期，false不过期
-        boolean tokenExpired = jwtUtil.isTokenExpired(expiration);
-        //token失效
-        if(userId == null || tokenExpired){
-            throw new IncorrectCredentialsException("token失效，请重新登录");
-        }
 
         //查询用户信息
         SysUserEntity user = shiroService.queryUser(userId);
-        //账号锁定
+        //账户不存在
         if(user == null){
             throw new LockedAccountException("账户不存在");
         }
